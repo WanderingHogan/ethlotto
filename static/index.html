@@ -19,7 +19,7 @@
     	<h3>Addresses Remaining: <b><u>{{addressesRemaining}}</u></b></h3>
     	<h3>So far I have checked: <b><u>{{percentage}} %</u></b></h3>
     	<h3 class="scary">I have been able to steal: <b><u>{{usedAddresses}} Eth</u></b></h3>
-    	<h3>Using a public API and checking balances, I should be done in roughly: <b><u>{{yearsLeft}} Millenia (basically until the sun burns out)</u></b></h3>
+    	<h3>Using a public API and checking balances, I should be done in roughly: <b><u>{{yearsLeft}} Years (basically until the sun burns out)</u></b></h3>
         <p><b>Last Wallet Checked: </b>{{ethAddress}}</p>
         <p><b>Private Key:</b> {{privKey}}</p>
 
@@ -34,6 +34,23 @@
     var socket = io();
     let address, privateKey, used, unused, total, remaining, percent;
 
+Number.prototype.noExponents= function(){
+    var data= String(this).split(/[eE]/);
+    if(data.length== 1) return data[0]; 
+
+    var  z= '', sign= this<0? '-':'',
+    str= data[0].replace('.', ''),
+    mag= Number(data[1])+ 1;
+
+    if(mag<0){
+        z= sign + '0.';
+        while(mag++) z += '0';
+        return z + str.replace(/^\-/,'');
+    }
+    mag -= str.length;  
+    while(mag--) z += '0';
+    return str + z;
+}
 
 	var app = new Vue({
 	  // element to mount to
@@ -59,9 +76,9 @@
     	app.unusedAddresses = totalChecked;
     	app.usedAddresses = amount
     	app.totalChecked = Number(totalChecked) + Number(totalUsed)
-    	app.addressesRemaining = Number(app.potentialAddresses) - Number(app.totalChecked)
-    	app.percentage = (Number(app.unusedAddresses)/Number(app.potentialAddresses))*100
-    	app.yearsLeft = Number(app.addressesRemaining)/(31622400*1000) //seconds year * 1000 years
+    	app.addressesRemaining = (Number(app.potentialAddresses) - Number(app.totalChecked)).noExponents()
+    	app.percentage = ((Number(app.unusedAddresses)/Number(app.potentialAddresses))*100).noExponents()
+    	app.yearsLeft = (Number(app.addressesRemaining)/(31622400)).noExponents() //seconds year
     	// privateKey = privkey;
     });
 
