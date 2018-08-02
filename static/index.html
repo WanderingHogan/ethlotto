@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Socket.IO chat</title>
+</head>
+<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+<style>
+	.scary {
+		color: red;
+	}
+    body {
+        font-family: 'Montserrat', sans-serif;
+    }
+</style>
+<body>
+    <div id="app">
+    	<h3>Addresses Checked: <b><u>{{totalChecked}}</u></b></h3>
+    	<h3>Addresses Remaining: <b><u>{{addressesRemaining}}</u></b></h3>
+    	<h3>So far I have checked: <b><u>{{percentage}}</u></b></h3>
+    	<h3 class="scary">I have been able to steal: <b><u>{{usedAddresses}}</u></b></h3>
+    	<h3>Using a public API and checking balances, I should be done in roughly: <b><u>{{yearsLeft}} Millenia</u></b></h3>
+        <p><b>Last Wallet Checked: </b>{{ethAddress}}</p>
+        <p><b>Private Key:</b> {{privKey}}</p>
+
+        <b>*I know this could be done a lot faster if I wrote this to better take advantage of this little servers resources, ran my own ethereum node to query balances, etc., but it still isn't gonna find anything.
+    </div>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+<!-- <script src="https://code.jquery.com/jquery-1.11.1.js"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+<script>
+// $(function() {
+    var socket = io();
+    let address, privateKey, used, unused, total, remaining, percent;
+
+
+	var app = new Vue({
+	  // element to mount to
+	  el: '#app',
+	  // initial data
+	  // firebase binding
+	  // https://github.com/vuejs/vuefire
+	  data: {
+	    ethAddress: address,
+	    privKey: privateKey,
+		potentialAddresses: 4631683569492647816942839400347516314130799386625622561578303360316525185598,
+		usedAddresses: used,
+		unusedAddresses: unused,
+		totalChecked: total,
+		addressesRemaining: remaining,
+		percentage: 0,
+		yearsLeft: 0
+	  }
+	})
+    socket.on('new data', function(address, privkey, amount, totalChecked, totalUsed) {
+    	app.ethAddress = address;
+    	app.privKey = privkey;
+    	app.unusedAddresses = totalChecked;
+    	app.usedAddresses = amount
+    	app.totalChecked = Number(totalChecked) + Number(totalUsed)
+    	app.addressesRemaining = Number(app.potentialAddresses) - Number(app.totalChecked)
+    	app.percentage = (Number(app.unusedAddresses)/Number(app.potentialAddresses))*100
+    	app.yearsLeft = Number(app.addressesRemaining)/(31622400*1000) //seconds in a century
+    	// privateKey = privkey;
+        console.log(address, privkey, amount, totalChecked, totalUsed)
+    });
+
+
+// });
+</script>
+
+</html>

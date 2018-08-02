@@ -4,7 +4,9 @@ const chalk = require('chalk')
 const Web3 = require('web3')
 const web3 = new Web3()
 const fs = require('fs')
-
+const app = require('express')();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 
 Date.prototype.yyyymmdd = function() {
   var mm = this.getMonth() + 1; // getMonth() is zero-based
@@ -35,14 +37,12 @@ var wallets = {
 fs.readFile('data/stats.json', 'utf8', function(err, data) {
     console.log('Checking for Stats file.')
     if (err) {
-        console.log(`${chalk.red("...Stats file NOT found, creating one.")}`)
         fs.writeFile('data/stats.json', JSON.stringify(writeObj), 'utf8', function(err) {
             if (err) {
                 return console.log(err);
             }
         });
     } else {
-        console.log(`${chalk.green("...Stats file exists, using it.")}`)
         writeObj = JSON.parse(data); //now it an object
     }
     date = new Date();
@@ -70,7 +70,6 @@ fs.readFile('data/stats.json', 'utf8', function(err, data) {
 fs.readFile(`data/used.txt`, 'utf8', function(err, data) {
     console.log(' Checking for used key list.')
     if (err) {
-        console.log(`${chalk.red("...Used file exists, using it.")}`)
         fs.writeFile(`data/used.txt`, 'address, privkey, balance\n', 'utf8', function(err) {
             if (err) {
                 return console.log(err);
@@ -100,6 +99,7 @@ const onToTheNextOne = function() {
         // checked++
 
         writeObj.checked++
+        // io.emit('new data', { for: 'everyone' });
         fs.writeFile('data/stats.json', JSON.stringify(writeObj), 'utf8', function(err) {
             if (err) {
                 return console.log(err);
@@ -118,6 +118,7 @@ const onToTheNextOne = function() {
             // console.log(`${chalk.green(account.address)} - ${e} - ${checked}`)
             onToTheNextOne()
         } else {
+            io.emit('new data', account.address, account.privKey, e, writeObj.checked, writeObj.usedWallets);
             // fs.appendFile(`data/${todaysDate}unused.txt`, `${JSON.stringify(account.address)}, ${JSON.stringify(account.privKey)}, ${e}\n`, () => {})
             // console.log(`${chalk.blue(account.address)} - ${e} - ${checked}`)
             onToTheNextOne()
@@ -126,3 +127,16 @@ const onToTheNextOne = function() {
 }
 
 onToTheNextOne()
+
+app.get('/', function(req, res){
+  // res.send(`<h1>Hello world${writeObj.checked}</h1>`);
+  res.sendFile(__dirname + '/static/index.html');
+});
+
+// io.on('connection', function(socket){
+//   console.log('a user connected');
+// });
+
+http.listen(3000, function(){
+  console.log('listening on *:3000');
+});

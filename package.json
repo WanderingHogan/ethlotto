@@ -4,16 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "install": "yarn install",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "chris hogan <chris@hogan.io>",
   "license": "ISC",
   "dependencies": {
     "chalk": "^2.4.1",
     "crypto": "^1.0.1",
     "ethereumjs-util": "^5.2.0",
+    "express": "^4.16.3",
+    "socket.io": "^2.1.1",
     "web3": "^1.0.0-beta.35",
     "websocket": "^1.0.26"
-  }
+  },
+  "repository": "git@github.com:WanderingHogan/ethlotto.git"
 }
