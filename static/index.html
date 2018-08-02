@@ -27,7 +27,7 @@
     </div>
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
-<!-- <script src="https://code.jquery.com/jquery-1.11.1.js"></script> -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-123054328-2"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
 <script>
 // $(function() {
@@ -64,6 +64,13 @@
     	app.yearsLeft = Number(app.addressesRemaining)/(31622400*1000) //seconds in a century
     	// privateKey = privkey;
     });
+
+
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-123054328-2');
 
 
 // });
